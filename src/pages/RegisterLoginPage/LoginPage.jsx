@@ -4,43 +4,56 @@ import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
 import { LOGIN, REGISTER, TOURS } from "../../utils/variables";
 import { useAuth } from "../../hocs/AuthProvider";
-import axios from "axios";
 
 const LoginPage = ({ isLogin }) => {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [err, setErr] = useState("");
+  const [msg, setMsg] = useState("");
+  const [showPsw, setShowPsw] = useState(false);
+
   const nav = useNavigate();
   const [userInfo, setUserInfo] = useState({
     username: "",
     email: "",
     password: "",
   });
+
   const handleRegister = async () => {
     try {
       setIsLoading(true);
-      const hashedPassword = userInfo?.password;
       if (isLogin) {
-        const res = await axios.post(
-          "https://tourismapp-lice.onrender.com/auth/login",
+        const res = await axiosInstance.post(
+          "auth/login",
           {
             email: userInfo?.email,
-            password: hashedPassword,
+            password: userInfo?.password,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
-        login(res?.data?.token);
+
+        login(res.data.token, res.data.userId);
         nav(TOURS);
       } else {
-        await axiosInstance.post("auth/register", {
+        const res = await axiosInstance.post("auth/register", {
           username: userInfo?.username,
           email: userInfo?.email,
-          password: hashedPassword,
+          password: userInfo?.password,
           isAdmin: false,
         });
+        setMsg(res.data.username);
+        setIsLoading(false);
+        nav(LOGIN);
+        setMsg("");
       }
     } catch (e) {
-      if (e?.response?.data[0].msg) setErr(e?.response?.data[0].msg);
+      if (e?.response?.data[0]?.message) setErr(e?.response?.data[0].message);
       else console.log(e);
+      setIsLoading(false);
     }
   };
 
@@ -48,7 +61,7 @@ const LoginPage = ({ isLogin }) => {
     <>
       <div className="sign-up-container">
         <h2>{isLogin ? "Sign In" : "Sign Up"}</h2>
-        <form>
+        <div className="form">
           {!isLogin && (
             <>
               <label htmlFor="name">Name:</label>
@@ -82,7 +95,7 @@ const LoginPage = ({ isLogin }) => {
           />
           <label htmlFor="password">Password:</label>
           <input
-            type="password"
+            type={showPsw ? "text" : "password"}
             id="password"
             name="password"
             value={userInfo?.password}
@@ -95,7 +108,12 @@ const LoginPage = ({ isLogin }) => {
             }}
             required
           />
-          <span>{err}</span>
+          <span onClick={() => setShowPsw((v) => !v)}>
+            {showPsw ? "hide" : "show"} password
+          </span>
+          {err && <span>{err}</span>}
+          {msg && <span>Welcome, {msg}!</span>}
+
           <div className="btns">
             <button onClick={handleRegister}>
               {isLoading ? "Loading..." : !isLogin ? "Sign Up" : "Sign In"}
@@ -104,7 +122,7 @@ const LoginPage = ({ isLogin }) => {
               {isLogin ? "Sign Up" : "Sign In"}
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </>
   );

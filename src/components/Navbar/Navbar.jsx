@@ -1,9 +1,15 @@
 import "./Navbar.css";
-import { useAuth } from "../../hooks/useAuth";
-import { LOGIN, PUBLIC, REGISTER, TOURS } from "../../utils/variables";
+import { LOGIN, PROFILE, PUBLIC, REGISTER, TOURS } from "../../utils/variables";
 import logo from "../../assets/images/travel_today_logo.png";
+import { useAuth } from "../../hocs/AuthProvider";
+import { useNavigate } from "react-router-dom";
+
 const Navbar = () => {
-  const { token } = useAuth();
+  const { isAuth, logout } = useAuth();
+  const nav = useNavigate();
+  const handleLogout = () => {
+    logout();
+  };
   return (
     <header>
       <div className="logo">
@@ -15,17 +21,34 @@ const Navbar = () => {
             <a href={PUBLIC}>Home</a>
           </li>
           <li>
-            <a href={token ? TOURS : LOGIN}>Tours</a>
+            <a href={isAuth ? TOURS : LOGIN}>Tours</a>
           </li>
-          <li>
-            <a href={token ? TOURS : LOGIN}>Profile</a>
-          </li>
-          <li className="signup">
-            <a href={REGISTER}>Sign Up</a>
-          </li>
-          <li className="signin">
-            <a href={LOGIN}>Sign In</a>
-          </li>
+          {isAuth ? (
+            <>
+              <button
+                className="profile"
+                onClick={() => {
+                  nav(PROFILE);
+                }}
+              >
+                P
+              </button>
+              <li className="signin">
+                <a href={LOGIN} onClick={handleLogout}>
+                  LogOut
+                </a>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="signup">
+                <a href={REGISTER}>Sign Up</a>
+              </li>
+              <li className="signin">
+                <a href={LOGIN}>Sign In</a>
+              </li>
+            </>
+          )}
         </ul>
         <div className="burger-menu">
           <div className="bar"></div>
