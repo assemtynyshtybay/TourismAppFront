@@ -47,7 +47,7 @@ const Cart = ({ openRef }) => {
   useEffect(() => {
     getTours();
   }, []);
-  console.log(data);
+
   return (
     <div ref={openRef} className="cartBackground">
       <div className="cart">

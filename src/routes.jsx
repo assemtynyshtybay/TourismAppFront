@@ -1,12 +1,20 @@
 import React from "react";
 // import { createBrowserRouter } from "react-router-dom";
-import { LOGIN, PROFILE, PUBLIC, REGISTER, TOURS } from "./utils/variables";
+import {
+  HOME,
+  LOGIN,
+  PROFILE,
+  PUBLIC,
+  REGISTER,
+  TOURS,
+} from "./utils/variables";
 // import App from "./App";
 import LoginPage from "./pages/RegisterLoginPage/LoginPage";
 import NotFoundPage from "./pages/NotFounPage/NotFoundPage";
 import FirstScreen from "./components/FirstScreen/FirstScreen";
 import Tours from "./pages/Tours/Tours";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import App from "./App";
 
 // const routes = [
 //   {
@@ -41,10 +49,10 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage";
 //   },
 // ];
 export const routesApp = [
-  // {
-  //   path: HOME,
-  //   element: <FirstScreen />,
-  // },
+  {
+    path: HOME,
+    element: <FirstScreen />,
+  },
   {
     path: PUBLIC,
     element: <FirstScreen />,
